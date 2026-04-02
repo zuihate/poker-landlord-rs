@@ -2,6 +2,7 @@ use std::io::{self, Write};
 
 use crate::card::rank::Rank;
 use crate::card::suit::Suit;
+use crate::player::PlayerType;
 
 use super::Game;
 
@@ -62,7 +63,11 @@ impl Game {
             println!("玩家{}的牌: {}", player.id + 1, player.hand);
             println!("玩家{}，你要抢地主吗？(y/n)", player.id + 1);
             // 读取玩家输入，判断是否抢地主
-            let input: bool = ask_yes_no();
+            let input: bool = if player.player_type == PlayerType::AI {
+                rand::random()
+            } else {
+                ask_yes_no()
+            };
 
             // 处理玩家的选择
             if input {

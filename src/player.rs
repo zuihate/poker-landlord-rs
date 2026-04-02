@@ -30,6 +30,7 @@ use crate::card::parser::tokenize_card_input;
 use crate::card::rank::Rank;
 use crate::error::{PlayerError, PlayerResult};
 use crate::rules::Play;
+use crate::util::request_ai_input;
 
 /// 玩家在游戏中的角色
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -142,10 +143,10 @@ impl Player {
         self.hand.contains_all(cards)
     }
 
-    pub fn choose_play(&self) -> PlayerResult<Play> {
+    pub fn choose_play(&self,card_history:String) -> PlayerResult<Play> {
         match self.player_type {
             PlayerType::Human => self.choose_play_human(),
-            PlayerType::AI => self.choose_play_ai(),
+            PlayerType::AI => self.choose_play_ai(card_history),
         }
     }
 
@@ -159,8 +160,18 @@ impl Player {
         Ok(play)
     }
 
-    pub fn choose_play_ai(&self) -> PlayerResult<Play> {
-        self.choose_play_human()
+    pub fn choose_play_ai(&self,card_history:String) -> PlayerResult<Play> {
+        let cards = format!(
+            "你的牌: {}, 请选择要出的牌（输入牌的点数，例如 '3 3 4 5'）为空则跳过, 请你直接返回纯文本,就像是你在命令行输入一样",
+            self.hand,
+        );
+        let selected = self.select_cards(tokenize_card_input(&request_ai_input(cards,card_history)))?;
+
+        let play = match Play::new(selected) {
+            Ok(play) => play,
+            Err(_) => return Err(PlayerError::InvalidPlay("手牌中不存在这些卡牌".to_string())),
+        };
+        Ok(play)
     }
 
     /// 根据输入字符串解析并选择卡牌

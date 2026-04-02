@@ -5,7 +5,6 @@ on:
     tags:
       - "v*"
 
-# ⭐ 必须，否则 403
 permissions:
   contents: write
 
@@ -48,12 +47,10 @@ jobs:
       - name: Build (release)
         run: cargo build --release
 
-      # ✅ 可选：减小体积
       - name: Strip binary (Linux/macOS)
         if: runner.os != 'Windows'
         run: strip target/release/${{ matrix.bin }}
 
-      # 📦 Linux / macOS 打包
       - name: Package (Unix)
         if: runner.os != 'Windows'
         run: |
@@ -61,7 +58,6 @@ jobs:
           cp target/release/${{ matrix.bin }} dist/
           tar -czf poker-landlord-rs-${{ github.ref_name }}-${{ matrix.name }}.tar.gz -C dist .
 
-      # 📦 Windows 打包
       - name: Package (Windows)
         if: runner.os == 'Windows'
         run: |
@@ -69,7 +65,6 @@ jobs:
           copy target\release\${{ matrix.bin }} dist\
           powershell Compress-Archive -Path dist\* -DestinationPath poker-landlord-rs-${{ github.ref_name }}-windows.zip
 
-      # 🚀 创建 Release 并上传文件
       - name: Upload Release
         uses: softprops/action-gh-release@v2
         with:

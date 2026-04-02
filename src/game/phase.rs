@@ -1,6 +1,4 @@
-use crate::card::cards::Cards;
 use crate::player::PlayerType;
-use crate::rules::Play;
 use crate::rules::PlayCategory;
 
 use super::Game;
@@ -28,8 +26,9 @@ impl Game {
                     self.players[self.current_player].id + 1,
                 );
             }
+            let card_history = format!(" < 出牌历史 ->  {:?} >",self.play_history.iter().map(|x| format!("玩家<{}> 类型<{:?}> 出牌[{}]",x.0,x.1.category,x.1.cards)).collect::<Vec<_>>());
 
-            let play = match self.players[self.current_player].choose_play() {
+            let play = match self.players[self.current_player].choose_play(card_history) {
                 Ok(play) => play,
                 Err(error) => {
                     println!("选择牌错误: {}", error);
@@ -44,12 +43,11 @@ impl Game {
                         self.players[self.current_player].player_type,
                         self.players[self.current_player].id + 1
                     );
-
+                    self.play_history.push((self.current_player,play));
                     self.current_player = (self.current_player + 1) % 3;
 
                     if self.last_player == self.current_player {
                         println!("连续两位玩家过牌，上一手牌被放弃，重新开始出牌。");
-                        self.last_played_cards = Play::new(Cards::new()).unwrap();
                     }
                     continue;
                 }
@@ -68,7 +66,8 @@ impl Game {
                         self.players[self.current_player].id + 1,
                         play.cards
                     );
-                    self.last_played_cards = play;
+                    self.last_played_cards = play.clone();
+                    self.play_history.push((self.current_player,play));
                     self.last_player = self.current_player;
                 }
                 Err(error) => {

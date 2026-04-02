@@ -30,3 +30,4 @@ coverage/
 # 文档生成目录（如果以后用 mdBook 或 cargo doc）
 docs/
 book/
+.env

@@ -44,6 +44,8 @@ pub struct Game {
     pub last_player: usize,
     /// 上次有效出牌的牌型和卡牌
     pub last_played_cards: Play,
+    /// 出牌记录
+    pub play_history:Vec<(usize,Play)>
 }
 
 impl Game {
@@ -66,13 +68,13 @@ impl Game {
                 1,
                 deal.player_hands[1].clone(),
                 Role::Farmer,
-                PlayerType::Human,
+                PlayerType::AI,
             ),
             Player::new(
                 2,
                 deal.player_hands[2].clone(),
                 Role::Farmer,
-                PlayerType::Human,
+                PlayerType::AI,
             ),
         ];
 
@@ -84,6 +86,7 @@ impl Game {
             current_player: 0,
             last_player: 0,
             last_played_cards,
+            play_history:Default::default()
         }
     }
 

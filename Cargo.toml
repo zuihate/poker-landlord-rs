@@ -1,0 +1,11 @@
+[package]
+name = "poker-landlord-rs"
+version = "0.1.0"
+edition = "2024"
+description = "A command-line Dou Dizhu (Landlord) game implemented in Rust"
+license = "MIT"
+repository = "https://github.com/zuihate/poker-landlord-rs"
+keywords = ["game", "card", "landlord", "dou-dizhu"]
+
+[dependencies]
+rand = "0.8"

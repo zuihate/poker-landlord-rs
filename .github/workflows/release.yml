@@ -5,6 +5,10 @@ on:
     tags:
       - "v*"
 
+# ⭐ 必须，否则 403
+permissions:
+  contents: write
+
 env:
   CARGO_TERM_COLOR: always
 
@@ -32,33 +36,44 @@ jobs:
             name: macos
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
 
-      - name: Build
+      - name: Cache dependencies
+        uses: Swatinem/rust-cache@v2
+
+      - name: Build (release)
         run: cargo build --release
 
-      # 📦 打包
-      - name: Package (Linux / macOS)
+      # ✅ 可选：减小体积
+      - name: Strip binary (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: strip target/release/${{ matrix.bin }}
+
+      # 📦 Linux / macOS 打包
+      - name: Package (Unix)
         if: runner.os != 'Windows'
         run: |
           mkdir dist
           cp target/release/${{ matrix.bin }} dist/
-          tar -czf poker-landlord-rs-${{ matrix.name }}.tar.gz -C dist .
+          tar -czf poker-landlord-rs-${{ github.ref_name }}-${{ matrix.name }}.tar.gz -C dist .
 
+      # 📦 Windows 打包
       - name: Package (Windows)
         if: runner.os == 'Windows'
         run: |
           mkdir dist
           copy target\release\${{ matrix.bin }} dist\
-          powershell Compress-Archive -Path dist\* -DestinationPath poker-landlord-rs-windows.zip
+          powershell Compress-Archive -Path dist\* -DestinationPath poker-landlord-rs-${{ github.ref_name }}-windows.zip
 
-      # 🚀 上传 Release
+      # 🚀 创建 Release 并上传文件
       - name: Upload Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
             *.tar.gz
             *.zip
+          fail_on_unmatched_files: false

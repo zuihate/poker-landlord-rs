@@ -8,6 +8,13 @@ use std::collections::BTreeMap;
 use super::Card;
 use super::rank::Rank;
 
+#[macro_export]
+macro_rules! cards {
+    ($card:expr; $n:expr) => {
+        $crate::card::cards::Cards::from_vec(vec![$card; $n])
+    };
+}
+
 /// 代表一组扑克牌的集合
 ///
 /// 使用 Vec<Card> 作为内部存储，支持排序、查询、迭代等操作。

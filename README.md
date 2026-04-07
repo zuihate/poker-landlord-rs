@@ -1,4 +1,4 @@
-# poker-landlord
+# poker-landlord-rs
 
 **用 Rust 实现的命令行斗地主游戏**  
 A command-line Dou Dizhu (Landlord) game implemented in Rust.

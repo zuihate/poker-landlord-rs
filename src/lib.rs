@@ -33,8 +33,8 @@
 
 pub mod card;
 pub mod error;
-pub mod game;
-pub mod _game;
 pub mod player;
 pub mod rules;
 
+pub mod _game;
+pub mod game;

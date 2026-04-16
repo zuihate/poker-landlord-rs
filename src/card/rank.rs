@@ -48,6 +48,25 @@ pub enum Rank {
 }
 
 impl Rank {
+    /// 所有点数的完整列表
+    pub const ALL: [Rank; 15] = [
+        Rank::Three,
+        Rank::Four,
+        Rank::Five,
+        Rank::Six,
+        Rank::Seven,
+        Rank::Eight,
+        Rank::Nine,
+        Rank::Ten,
+        Rank::Jack,
+        Rank::Queen,
+        Rank::King,
+        Rank::Ace,
+        Rank::Two,
+        Rank::JokerSmall,
+        Rank::JokerBig,
+    ];
+
     /// 获取点数的数值表示
     ///
     /// 返回与 enum 判别式相同的值，便于数值比较

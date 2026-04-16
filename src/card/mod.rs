@@ -15,9 +15,9 @@ pub mod parser;
 pub mod rank;
 pub mod suit;
 
+pub use cards::Cards;
 pub use rank::Rank;
 pub use suit::Suit;
-pub use cards::Cards;
 
 use crate::error::CardError;
 

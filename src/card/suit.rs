@@ -27,6 +27,11 @@ use std::fmt;
 /// Display trait 实现 - 用于打印花色
 ///
 /// 输出花色符号：♠ ♥ ♣ ♦
+impl Suit {
+    /// 所有花色的完整列表
+    pub const ALL: [Suit; 4] = [Suit::Spades, Suit::Hearts, Suit::Clubs, Suit::Diamonds];
+}
+
 impl fmt::Display for Suit {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let suit_str = match self {

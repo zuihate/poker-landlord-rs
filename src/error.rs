@@ -7,6 +7,7 @@
 //!
 //! 以及它们之间的转换和传播方式
 
+use crate::game::GamePhase;
 use std::fmt;
 
 /// 游戏的主错误类型
@@ -20,6 +21,17 @@ pub enum GameError {
     Player(PlayerError),
     /// 卡牌解析或操作错误
     Card(CardError),
+    /// 无效的玩家标识符
+    InvalidPlayerId(usize),
+    /// 操作为错误阶段
+    WrongPhase {
+        expected: &'static str,
+        actual: GamePhase,
+    },
+    /// 操作被规则或阶段拒绝
+    ActionNotAllowed(String),
+    /// 其他通用错误
+    Other(String),
 }
 
 impl fmt::Display for GameError {
@@ -28,6 +40,12 @@ impl fmt::Display for GameError {
             GameError::Play(err) => write!(f, "牌型错误: {}", err),
             GameError::Player(err) => write!(f, "玩家错误: {}", err),
             GameError::Card(err) => write!(f, "卡牌错误: {}", err),
+            GameError::InvalidPlayerId(id) => write!(f, "无效玩家编号: {}", id),
+            GameError::WrongPhase { expected, actual } => {
+                write!(f, "错误阶段: 期望 {}，当前 {:?}", expected, actual)
+            }
+            GameError::ActionNotAllowed(reason) => write!(f, "动作不被允许: {}", reason),
+            GameError::Other(msg) => write!(f, "错误: {}", msg),
         }
     }
 }
@@ -54,7 +72,13 @@ impl From<CardError> for GameError {
 
 impl From<String> for GameError {
     fn from(err: String) -> Self {
-        GameError::Player(PlayerError::InvalidInput(err))
+        GameError::Other(err)
+    }
+}
+
+impl From<&str> for GameError {
+    fn from(err: &str) -> Self {
+        GameError::Other(err.to_string())
     }
 }
 

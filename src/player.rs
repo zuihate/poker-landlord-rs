@@ -26,8 +26,8 @@ use std::io::{self, Write};
 
 use crate::card::Card;
 use crate::card::Cards;
-use crate::card::parser::tokenize_card_input;
 use crate::card::Rank;
+use crate::card::parser::tokenize_card_input;
 use crate::error::{PlayerError, PlayerResult};
 use crate::rules::Play;
 

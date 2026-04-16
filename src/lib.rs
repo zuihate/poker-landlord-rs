@@ -27,14 +27,14 @@
 //! - 3个玩家，其中1个是地主
 //! - 地主获得3张底牌
 //! - 地主先出牌
-//! - 大于等于5张牌的顺牌序列称为"顺"
+//! - 顺子是连续5张或以上的单牌，2 和王牌不能参与顺子、连对和飞机
 //! - 炸弹可以压制除王炸外的所有牌
 //! - 王炸是最强的牌
 
 pub mod card;
 pub mod error;
 pub mod game;
+pub mod _game;
 pub mod player;
 pub mod rules;
 
-pub use crate::card::cards::Cards;

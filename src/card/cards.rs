@@ -6,12 +6,12 @@
 use std::collections::BTreeMap;
 
 use super::Card;
-use super::rank::Rank;
+use super::Rank;
 
 #[macro_export]
 macro_rules! cards {
     ($card:expr; $n:expr) => {
-        $crate::card::cards::Cards::from_vec(vec![$card; $n])
+        $crate::card::Cards::from_vec(vec![$card; $n])
     };
 }
 
@@ -23,9 +23,9 @@ macro_rules! cards {
 /// # 示例
 /// ```
 /// use poker_landlord_rs::card::Card;
-/// use poker_landlord_rs::card::cards::Cards;
-/// use poker_landlord_rs::card::rank::Rank;
-/// use poker_landlord_rs::card::suit::Suit;
+/// use poker_landlord_rs::card::Cards;
+/// use poker_landlord_rs::card::Rank;
+/// use poker_landlord_rs::card::Suit;
 ///
 /// // 创建卡牌集合
 /// let mut cards = Cards::new();
@@ -142,7 +142,7 @@ impl Cards {
     ///
     /// # 示例
     /// ```
-    /// use poker_landlord_rs::card::cards::Cards;
+    /// use poker_landlord_rs::card::Cards;
     /// use poker_landlord_rs::card::Card;
     /// use poker_landlord_rs::card::rank::Rank;
     /// use poker_landlord_rs::card::suit::Suit;
@@ -181,12 +181,12 @@ impl Cards {
     /// # 时间复杂度
     /// O(n) - 线性时间复杂度
     ///
-    /// # 例子
-    /// ```ignored
-    /// use poker_landlord_rs::card::cards::Cards;
+    /// # 示例
+    /// ```rust
+    /// use poker_landlord_rs::card::Cards;
     ///
-    /// let hand = Cards::from_vec(vec![...]);
-    /// let played = Cards::from_vec(vec![...]);
+    /// let hand = Cards::from_vec(vec![/* ... */]);
+    /// let played = Cards::from_vec(vec![/* ... */]);
     /// if let Some(remaining) = hand.subtract(&played) {
     ///     // 出牌成功，remaining 是剩余手牌
     /// }
@@ -221,7 +221,7 @@ impl Cards {
     /// # 例子
     /// ```
     /// use poker_landlord_rs::card::Card;
-    /// use poker_landlord_rs::card::cards::Cards;
+    /// use poker_landlord_rs::card::Cards;
     /// use poker_landlord_rs::card::rank::Rank;
     /// use poker_landlord_rs::card::suit::Suit;
     ///
@@ -363,7 +363,7 @@ impl std::ops::IndexMut<usize> for Cards {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::card::suit::Suit;
+    use crate::card::Suit;
 
     fn create_test_cards() -> Cards {
         Cards::from_vec(vec![

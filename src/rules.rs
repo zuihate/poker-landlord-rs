@@ -31,8 +31,8 @@
 
 use std::collections::BTreeMap;
 
-use crate::card::cards::Cards;
-use crate::card::rank::Rank;
+use crate::card::Cards;
+use crate::card::Rank;
 use crate::error::PlayError;
 
 /// 顺子的最小长度（5张卡牌）
@@ -90,12 +90,12 @@ pub enum PlayCategory {
     Pass,
     /// 单牌 - 基础牌型
     ///
-    /// 1张任意卡牌。可以被更大点数的单牌、对子、三不带等压制。
+    /// 1张任意卡牌。仅可被更大点数的单牌压制，或被炸弹/王炸压制。
     Single,
 
     /// 对子 - 基础牌型
     ///
-    /// 2张相同点数的卡牌。可以被更大的对子、三不带等压制。
+    /// 2张相同点数的卡牌。仅可被更大的对子压制，或被炸弹/王炸压制。
     Pair,
 
     /// 三不带 - 基础牌型
@@ -181,7 +181,7 @@ pub enum PlayCategory {
 /// # 示例
 /// ```
 /// use poker_landlord_rs::card::Card;
-/// use poker_landlord_rs::card::cards::Cards;
+/// use poker_landlord_rs::card::Cards;
 /// use poker_landlord_rs::card::rank::Rank;
 /// use poker_landlord_rs::card::suit::Suit;
 /// use poker_landlord_rs::rules::{Play, PlayCategory};
@@ -215,7 +215,7 @@ impl Play {
     /// # 示例
     /// ```
     /// use poker_landlord_rs::card::Card;
-    /// use poker_landlord_rs::card::cards::Cards;
+    /// use poker_landlord_rs::card::Cards;
     /// use poker_landlord_rs::card::rank::Rank;
     /// use poker_landlord_rs::card::suit::Suit;
     /// use poker_landlord_rs::rules::Play;
@@ -341,7 +341,7 @@ impl Play {
 /// # 示例
 /// ```
 /// use poker_landlord_rs::card::Card;
-/// use poker_landlord_rs::card::cards::Cards;
+/// use poker_landlord_rs::card::Cards;
 /// use poker_landlord_rs::card::rank::Rank;
 /// use poker_landlord_rs::card::suit::Suit;
 /// use poker_landlord_rs::rules::{classify_play, PlayCategory};
@@ -397,7 +397,7 @@ pub fn classify_play(cards: &Cards) -> Option<PlayCategory> {
 /// # 示例
 /// ```
 /// use poker_landlord_rs::card::Card;
-/// use poker_landlord_rs::card::cards::Cards;
+/// use poker_landlord_rs::card::Cards;
 /// use poker_landlord_rs::card::rank::Rank;
 /// use poker_landlord_rs::card::suit::Suit;
 /// use poker_landlord_rs::rules::is_valid_play;
@@ -685,7 +685,7 @@ fn try_basic_pattern_with_counts(
 mod tests {
     use super::*;
     use crate::card::Card;
-    use crate::card::suit::Suit;
+    use crate::card::Suit;
 
     // 辅助函数：创建对子
     fn pair(rank: Rank) -> Cards {

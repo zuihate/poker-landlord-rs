@@ -15,8 +15,10 @@ pub mod parser;
 pub mod rank;
 pub mod suit;
 
-use super::card::rank::Rank;
-use super::card::suit::Suit;
+pub use rank::Rank;
+pub use suit::Suit;
+pub use cards::Cards;
+
 use crate::error::CardError;
 
 /// 代表一张扑克牌
@@ -26,8 +28,8 @@ use crate::error::CardError;
 /// # 示例
 /// ```
 /// use poker_landlord_rs::card::Card;
-/// use poker_landlord_rs::card::rank::Rank;
-/// use poker_landlord_rs::card::suit::Suit;
+/// use poker_landlord_rs::card::Rank;
+/// use poker_landlord_rs::card::Suit;
 ///
 /// // 创建普通牌
 /// let card = Card::new(Rank::Three, Suit::Spades);  // ♠3
@@ -119,8 +121,8 @@ impl std::fmt::Display for Card {
 ///
 /// 支持多种格式：
 /// - 王牌：`"小王"`, `"大王"`, `"sj"`, `"bj"`
-/// - 普通牌：`"♠3"` (花色在前) 或 `"3♠"` (点数在前)
-/// - 普通牌：`"S3"`, `"3S"` (字母代替符号)
+/// - 普通牌：`"♠3"` / `"S3"`（花色在前）
+/// - 普通牌：`"3♠"` / `"3S"`（点数在前）
 impl std::str::FromStr for Card {
     type Err = CardError;
 

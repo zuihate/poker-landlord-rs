@@ -5,7 +5,7 @@
 //! # 示例
 //! ```
 //! use poker_landlord_rs::player::{Player, Role, PlayerType};
-//! use poker_landlord_rs::card::cards::Cards;
+//! use poker_landlord_rs::card::Cards;
 //!
 //! // 创建空手牌（测试用最小示例）
 //! let cards = Cards::default();
@@ -25,9 +25,9 @@ use std::fmt;
 use std::io::{self, Write};
 
 use crate::card::Card;
-use crate::card::cards::Cards;
+use crate::card::Cards;
 use crate::card::parser::tokenize_card_input;
-use crate::card::rank::Rank;
+use crate::card::Rank;
 use crate::error::{PlayerError, PlayerResult};
 use crate::rules::Play;
 
@@ -53,7 +53,7 @@ impl fmt::Display for Role {
 pub enum PlayerType {
     /// 真人玩家，需要键盘输入
     Human,
-    /// 人机（AI），自动出牌
+    /// 人机（AI），当前行为与真人一致，后续可实现自动逻辑
     AI,
 }
 
@@ -72,13 +72,13 @@ impl fmt::Display for PlayerType {
 /// 支持手牌管理、出牌验证等操作。
 #[derive(Debug)]
 pub struct Player {
-    /// 玩家唯一编号
+    /// 玩家编号
     pub id: usize,
     /// 玩家的手牌
     pub hand: Cards,
     /// 玩家的角色（地主或农民）
     pub role: Role,
-    /// 玩家是否是真人
+    /// 玩家类型（真人 / 人机）
     pub player_type: PlayerType,
 }
 
@@ -159,6 +159,9 @@ impl Player {
         Ok(play)
     }
 
+    /// AI 出牌逻辑的占位实现
+    ///
+    /// 当前版本仍使用与真人相同的输入路径，后续可替换为自动出牌策略。
     pub fn choose_play_ai(&self) -> PlayerResult<Play> {
         self.choose_play_human()
     }

@@ -1,4 +1,4 @@
-use crate::card::{Rank, Suit, Cards};
+use crate::card::{Cards, Rank, Suit};
 use crate::error::GameError;
 use crate::game::dealer::InitialDeal;
 use crate::game::types::{GameAction, GameActionResult, GamePhase, GameResult};
@@ -236,5 +236,11 @@ impl Game {
                 "当前阶段不是出牌阶段".to_string(),
             ))
         }
+    }
+}
+
+impl Default for Game {
+    fn default() -> Self {
+        Self::new()
     }
 }

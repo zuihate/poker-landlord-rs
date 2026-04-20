@@ -1,20 +1,18 @@
-use rand::seq::SliceRandom;
-use rand::thread_rng;
-use std::fmt;
-
-use crate::card::Card;
-use crate::card::Cards;
-use crate::card::Rank;
-use crate::card::Suit;
+use crate::card::{Card, Cards, Rank, Suit};
 
 pub struct Deck {
-    cards: Cards,
+    pub cards: Cards,
 }
+
+use rand::seq::SliceRandom;
+use rand::thread_rng;
+
 impl Deck {
     /// 创建一个新的牌堆，包含54张牌（52张普通牌和2张 Joker）
     pub fn new() -> Self {
         // 创建一个标准的54张牌的牌堆
-        let mut card_vec = Vec::with_capacity(54);
+        let mut cards = Cards::with_capacity(54);
+            
         // 牌的花色和点数
         let suits = Suit::ALL;
         let ranks = Rank::ALL;
@@ -25,26 +23,25 @@ impl Deck {
                 continue;
             }
             for &suit in &suits {
-                card_vec.push(Card {
+                cards.push(Card {
                     rank,
                     suit: Some(suit),
                 });
             }
         }
         // 添加两张 Joker
-        card_vec.push(Card {
+        cards.push(Card {
             rank: Rank::JokerBig,
             suit: None,
         });
-        card_vec.push(Card {
+        cards.push(Card {
             rank: Rank::JokerSmall,
             suit: None,
         });
 
-        let cards = Cards::from_vec(card_vec);
         Self { cards }
     }
-
+    
     /// 洗牌函数，使用随机数生成器打乱牌堆的顺序
     pub fn shuffle(&mut self) {
         let mut rng = thread_rng();
@@ -67,17 +64,13 @@ impl InitialDeal {
     pub fn new() -> Self {
         let mut deck = Deck::new();
         deck.shuffle();
-
-        // 将牌堆转换为 Vec 以便分配
-        let all_cards: Vec<Card> = deck.cards.iter().cloned().collect();
-
+        
         let player_hands: [Cards; 3] = [
-            Cards::from_slice(&all_cards[0..17]),
-            Cards::from_slice(&all_cards[17..34]),
-            Cards::from_slice(&all_cards[34..51]),
+            Cards::from_slice(&deck.cards.as_slice()[0..17]),
+            Cards::from_slice(&deck.cards.as_slice()[17..34]),
+            Cards::from_slice(&deck.cards.as_slice()[34..51]),
         ];
-        let landlord_cards = Cards::from_slice(&all_cards[51..54]);
-
+        let landlord_cards = Cards::from_slice(&deck.cards.as_slice()[51..54]);
         let mut deal = Self {
             player_hands,
             landlord_cards,
@@ -97,6 +90,8 @@ impl Default for InitialDeal {
         Self::new()
     }
 }
+
+use std::fmt;
 
 impl fmt::Display for InitialDeal {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {

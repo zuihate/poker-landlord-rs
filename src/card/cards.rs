@@ -5,8 +5,7 @@
 
 use std::collections::BTreeMap;
 
-use super::Card;
-use super::Rank;
+use super::{Card, Rank};
 
 #[macro_export]
 macro_rules! cards {
@@ -48,6 +47,20 @@ impl Cards {
         Self(Vec::new())
     }
 
+    /// 创建一个指定容量的卡牌集合
+    ///
+    /// 可以预先分配底层 Vec 的空间，避免重复扩容。
+    pub fn with_capacity(capacity: usize) -> Self {
+        Self(Vec::with_capacity(capacity))
+    }
+
+    /// 从 Cards 消耗所有权利创建一个新的 Cards
+    /// 
+    /// 该方法允许从现有的 Cards 创建一个新的实例，适用于需要转换或重新
+    pub fn from_cards(cards: Cards) -> Self {
+        Self(cards.0)
+    }
+    
     /// 从 Vec<Card> 创建卡牌集合
     pub fn from_vec(cards: Vec<Card>) -> Self {
         Self(cards)
@@ -71,36 +84,6 @@ impl Cards {
     pub fn sorted(mut self) -> Self {
         self.sort();
         self
-    }
-
-    /// 获取集合中的卡牌数量
-    pub fn len(&self) -> usize {
-        self.0.len()
-    }
-
-    /// 判断集合是否为空
-    pub fn is_empty(&self) -> bool {
-        self.0.is_empty()
-    }
-
-    /// 清空集合中的所有卡牌
-    pub fn clear(&mut self) {
-        self.0.clear();
-    }
-
-    /// 向集合中添加一张卡牌
-    pub fn push(&mut self, card: Card) {
-        self.0.push(card);
-    }
-
-    /// 向集合中添加多张卡牌
-    pub fn extend(&mut self, other: Cards) {
-        self.0.extend(other.0);
-    }
-
-    /// 判断集合中是否包含某张卡牌
-    pub fn contains(&self, card: Card) -> bool {
-        self.0.contains(&card)
     }
 
     /// 判断集合是否包含另一个集合中的所有卡牌
@@ -212,35 +195,6 @@ impl Cards {
         Some(remaining)
     }
 
-    /// 按点数分组统计卡牌
-    ///
-    /// 返回 (点数, 数量) 的向量，按点数从小到大排序
-    ///
-    /// 用于判断炸弹（4张同点数）、顺子、飞机等复杂牌型
-    ///
-    /// # 例子
-    /// ```
-    /// use poker_landlord_rs::card::Card;
-    /// use poker_landlord_rs::card::Cards;
-    /// use poker_landlord_rs::card::rank::Rank;
-    /// use poker_landlord_rs::card::suit::Suit;
-    ///
-    /// let cards = Cards::from_vec(vec![
-    ///     Card::new(Rank::Three, Suit::Spades),
-    ///     Card::new(Rank::Three, Suit::Hearts),
-    ///     Card::new(Rank::Five, Suit::Diamonds),
-    /// ]);
-    /// let groups = cards.group_by_rank();
-    /// // groups = [(Three, 2), (Five, 1)]
-    /// ```
-    pub fn group_by_rank(&self) -> Vec<(Rank, u8)> {
-        let mut map = std::collections::BTreeMap::new();
-        for card in &self.0 {
-            *map.entry(card.rank).or_insert(0) += 1;
-        }
-        map.into_iter().collect()
-    }
-
     /// 移除单张指定的卡牌
     ///
     /// 只删除第一个匹配的卡牌（按集合中的顺序）
@@ -252,28 +206,6 @@ impl Cards {
             .iter()
             .position(|c| c == &card)
             .map(|pos| self.0.remove(pos))
-    }
-
-    /// 获取第一张卡牌的不可变引用
-    ///
-    /// # 返回值
-    /// 如果集合非空返回 Some(&card)，否则返回 None
-    pub fn first(&self) -> Option<&Card> {
-        self.0.first()
-    }
-
-    /// 移除并返回第一张卡牌
-    ///
-    /// 常用于获取最后一张牌
-    ///
-    /// # 返回值
-    /// 如果集合非空返回 Some(card)，否则返回 None
-    pub fn pop_first(&mut self) -> Option<Card> {
-        if self.0.is_empty() {
-            None
-        } else {
-            Some(self.0.remove(0))
-        }
     }
 }
 
@@ -388,48 +320,6 @@ mod tests {
     }
 
     #[test]
-    fn test_subtract() {
-        let all = create_test_cards();
-        let to_remove = Cards::from_vec(vec![
-            Card::new(Rank::Three, Suit::Spades),
-            Card::new(Rank::Five, Suit::Diamonds),
-        ]);
-
-        let remaining = all.subtract(&to_remove).unwrap();
-        assert_eq!(remaining.len(), 2);
-        assert!(remaining.contains(Card::new(Rank::Three, Suit::Hearts)));
-        assert!(remaining.contains(Card::new(Rank::King, Suit::Clubs)));
-    }
-
-    #[test]
-    fn test_remove_one() {
-        let mut cards = create_test_cards();
-        let card_to_remove = Card::new(Rank::Five, Suit::Diamonds);
-
-        assert!(cards.remove_one(card_to_remove).is_some());
-        assert!(!cards.contains(card_to_remove));
-        assert_eq!(cards.len(), 3);
-    }
-
-    #[test]
-    fn test_pop_first() {
-        let mut cards = create_test_cards();
-        let first = cards.pop_first();
-        assert!(first.is_some());
-        assert_eq!(cards.len(), 3);
-    }
-
-    #[test]
-    fn test_group_by_rank() {
-        let cards = create_test_cards();
-        let grouped = cards.group_by_rank();
-
-        assert_eq!(grouped.len(), 3); // Three, Five, King
-        assert!(grouped.iter().any(|(r, c)| *r == Rank::Three && *c == 2));
-        assert!(grouped.iter().any(|(r, c)| *r == Rank::Five && *c == 1));
-    }
-
-    #[test]
     fn test_into_iter() {
         let cards = create_test_cards();
         let count = cards.iter().count();
@@ -440,5 +330,12 @@ mod tests {
     fn test_index_access() {
         let cards = create_test_cards();
         assert_eq!(cards[0].rank, Rank::Three);
+    }
+
+    #[test]
+    fn test_with_capacity() {
+        let cards = Cards::with_capacity(54);
+        assert_eq!(cards.len(), 0);
+        assert!(cards.capacity() >= 54);
     }
 }

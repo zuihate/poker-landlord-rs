@@ -9,7 +9,7 @@ use crate::error::CardError;
 ///
 /// 使用 #[repr(u8)] 以便于排序和存储
 #[allow(clippy::new_without_default)]
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(u8)]
 pub enum Suit {
     /// 方块（Diamond）- 红色，编码值 1

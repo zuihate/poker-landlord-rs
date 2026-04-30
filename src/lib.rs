@@ -33,8 +33,14 @@
 
 pub mod card;
 pub mod error;
+pub mod game;
 pub mod player;
 pub mod rules;
 
-pub mod _game;
-pub mod game;
+// 重新导出常用的顶级类型，便于外部项目快速使用
+// 用户无需深入理解模块结构，可以直接从 crate 根部导入
+pub use card::{Card, Cards, Rank, Suit};
+pub use error::{GameError, PlayError, PlayerError};
+pub use game::{Game, GameAction, GameActionResult, GamePhase, GameResult, GameState, PlayerState};
+pub use player::{Player, PlayerType, Role};
+pub use rules::{Play, PlayCategory};

@@ -11,10 +11,10 @@
 //! - [`parser`] - 卡牌字符串解析
 
 pub mod cards;
-pub mod parser;
 pub mod rank;
 pub mod suit;
 
+// 重新导出主要类型
 pub use cards::Cards;
 pub use rank::Rank;
 pub use suit::Suit;
@@ -39,7 +39,7 @@ use crate::error::CardError;
 /// let small_joker = Card::joker(true); // 小王
 /// ```
 #[allow(clippy::new_without_default)]
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Card {
     /// 卡牌的点数
     pub rank: Rank,
@@ -93,16 +93,6 @@ impl Card {
     pub fn get_suit(&self) -> Option<Suit> {
         self.suit
     }
-
-    /// 判断这张牌是否拥有指定的花色
-    pub fn has_suit(&self, suit: Suit) -> bool {
-        matches!(self.suit, Some(s) if s == suit)
-    }
-
-    /// 判断这张牌是否与指定的点数和花色匹配
-    pub fn matches(&self, rank: Rank, suit: Option<Suit>) -> bool {
-        self.rank == rank && self.suit == suit
-    }
 }
 
 /// Display trait 实现 - 用于打印卡牌
@@ -141,10 +131,10 @@ impl std::str::FromStr for Card {
         }
 
         // 尝试解析为王牌
-        if let Ok(rank) = s.parse::<Rank>()
-            && rank.is_joker()
-        {
-            return Ok(Card::joker(rank == Rank::JokerSmall));
+        if let Ok(rank) = s.parse::<Rank>() {
+            if rank.is_joker() {
+                return Ok(Card::joker(rank == Rank::JokerSmall));
+            }
         }
 
         // 对于普通牌，应该有花色符号或字母

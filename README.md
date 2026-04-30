@@ -17,6 +17,8 @@ A command-line Dou Dizhu (Landlord) game implemented in Rust.
 
 **当前状态**：可完整单机游玩（三人本地输入），暂无 AI（后续计划添加简单 AI）。
 
+> **💡 作为 Rust 库使用**：这个项目也可以作为纯逻辑游戏引擎库在其他项目中使用！详见 [LIBRARY_USAGE.md](./LIBRARY_USAGE.md)
+
 ## 🚀 快速开始 / Quick Start
 
 ### 1. 运行项目

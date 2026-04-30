@@ -31,8 +31,7 @@
 
 use std::collections::BTreeMap;
 
-use crate::card::Cards;
-use crate::card::Rank;
+use crate::card::{Cards, Rank};
 use crate::error::PlayError;
 
 /// 顺子的最小长度（5张卡牌）
@@ -364,14 +363,14 @@ pub fn classify_play(cards: &Cards) -> Option<PlayCategory> {
     // 根据卡牌长度智能路由
     match len {
         // 基础牌型专属范围（1-4张）
-        1..=4 => try_basic_pattern_with_counts(cards, len, &rank_counts),
+        1..=4 => try_basic_pattern_with_counts(cards, &rank_counts),
 
         // 5张：可能是三带二或顺子
-        5 => try_basic_pattern_with_counts(cards, len, &rank_counts)
+        5 => try_basic_pattern_with_counts(cards, &rank_counts)
             .or_else(|| try_straight_with_counts(cards, &rank_counts)),
 
         // 6张：最复杂的范围，可能是四带二、顺子、连对或飞机
-        6 => try_basic_pattern_with_counts(cards, len, &rank_counts)
+        6 => try_basic_pattern_with_counts(cards, &rank_counts)
             .or_else(|| try_straight_with_counts(cards, &rank_counts))
             .or_else(|| try_pair_sequence_with_counts(cards, &rank_counts))
             .or_else(|| try_plane_with_counts(cards, &rank_counts)),
@@ -380,7 +379,7 @@ pub fn classify_play(cards: &Cards) -> Option<PlayCategory> {
         _ => try_straight_with_counts(cards, &rank_counts)
             .or_else(|| try_pair_sequence_with_counts(cards, &rank_counts))
             .or_else(|| try_plane_with_counts(cards, &rank_counts))
-            .or_else(|| try_basic_pattern_with_counts(cards, len, &rank_counts)),
+            .or_else(|| try_basic_pattern_with_counts(cards, &rank_counts)),
     }
 }
 
@@ -638,10 +637,10 @@ fn try_plane_with_counts(
 
 /// 尝试识别基础牌型（使用预构建的 rank_counts）
 fn try_basic_pattern_with_counts(
-    _cards: &Cards,
-    len: usize,
+    cards: &Cards,
     rank_counts: &BTreeMap<Rank, usize>,
 ) -> Option<PlayCategory> {
+    let len = cards.len();
     let max_count = rank_counts.values().copied().max().unwrap_or(0);
 
     match len {

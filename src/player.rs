@@ -24,12 +24,8 @@ use std::collections::BTreeMap;
 use std::fmt;
 use std::io::{self, Write};
 
-use crate::card::Card;
-use crate::card::Cards;
-use crate::card::Rank;
-use crate::card::parser::tokenize_card_input;
+use crate::card::{Card, Cards, Rank};
 use crate::error::{PlayerError, PlayerResult};
-use crate::rules::Play;
 
 /// 玩家在游戏中的角色
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -80,6 +76,8 @@ pub struct Player {
     pub role: Role,
     /// 玩家类型（真人 / 人机）
     pub player_type: PlayerType,
+    /// 已经被出牌的卡牌（用于验证出牌合法性）
+    pub played_cards: Cards,
 }
 
 impl Player {
@@ -95,6 +93,10 @@ impl Player {
             hand,
             role,
             player_type,
+            played_cards: Cards::with_capacity(match role {
+                Role::Landlord => 20,
+                Role::Farmer => 17,
+            }),
         }
     }
 
@@ -140,30 +142,6 @@ impl Player {
     /// O(n + m)，其中 n 是手牌数量，m 是检查的卡牌数量
     pub fn has_cards(&self, cards: &Cards) -> bool {
         self.hand.contains_all(cards)
-    }
-
-    pub fn choose_play(&self) -> PlayerResult<Play> {
-        match self.player_type {
-            PlayerType::Human => self.choose_play_human(),
-            PlayerType::AI => self.choose_play_ai(),
-        }
-    }
-
-    pub fn choose_play_human(&self) -> PlayerResult<Play> {
-        let selected = self.select_cards(tokenize_card_input(&input()))?;
-
-        let play = match Play::new(selected) {
-            Ok(play) => play,
-            Err(_) => return Err(PlayerError::InvalidPlay("手牌中不存在这些卡牌".to_string())),
-        };
-        Ok(play)
-    }
-
-    /// AI 出牌逻辑的占位实现
-    ///
-    /// 当前版本仍使用与真人相同的输入路径，后续可替换为自动出牌策略。
-    pub fn choose_play_ai(&self) -> PlayerResult<Play> {
-        self.choose_play_human()
     }
 
     /// 根据输入字符串解析并选择卡牌
@@ -221,14 +199,13 @@ impl Player {
     /// - `Ok(())` - 成功出牌
     /// - `Err(PlayerError)` - 出牌失败
     pub fn play_cards(&mut self, cards: &Cards) -> PlayerResult<()> {
-        if !self.has_cards(cards) {
-            return Err(PlayerError::InvalidPlay("手牌中不存在这些卡牌".to_string()));
-        }
+        let remaining = self
+            .hand
+            .subtract(cards)
+            .ok_or_else(|| PlayerError::InvalidPlay("手牌中不存在这些卡牌".to_string()))?;
 
-        for card in cards.iter() {
-            self.hand.remove_one(*card);
-        }
-
+        self.hand = remaining;
+        self.played_cards.extend(cards.iter().copied());
         Ok(())
     }
 }

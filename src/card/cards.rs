@@ -121,7 +121,7 @@ impl Cards {
         let mut self_count = self.make_counts();
 
         for card in &other.0 {
-            if let Some(cnt) = self_count.get_mut(&card) {
+            if let Some(cnt) = self_count.get_mut(card) {
                 if *cnt > 0 {
                     *cnt -= 1;
                 } else {
@@ -532,19 +532,13 @@ mod tests {
 
     #[test]
     fn test_from_vec() {
-        let cards = Cards::from_vec(vec![
-            spades(Rank::Three),
-            hearts(Rank::Three),
-        ]);
+        let cards = Cards::from_vec(vec![spades(Rank::Three), hearts(Rank::Three)]);
         assert_eq!(cards.len(), 2);
     }
 
     #[test]
     fn test_from_slice() {
-        let original = vec![
-            spades(Rank::Three),
-            hearts(Rank::Three),
-        ];
+        let original = vec![spades(Rank::Three), hearts(Rank::Three)];
         let cards = Cards::from_slice(&original);
         assert_eq!(cards.len(), 2);
         // 确保是深拷贝
@@ -562,19 +556,13 @@ mod tests {
             clubs(Rank::King),
         ]);
 
-        let subset = Cards::from_vec(vec![
-            spades(Rank::Three),
-            spades(Rank::Five),
-        ]);
+        let subset = Cards::from_vec(vec![spades(Rank::Three), spades(Rank::Five)]);
         assert!(all.contains_all(&subset));
     }
 
     #[test]
     fn test_contains_all_not_contained() {
-        let all = Cards::from_vec(vec![
-            spades(Rank::Three),
-            hearts(Rank::Three),
-        ]);
+        let all = Cards::from_vec(vec![spades(Rank::Three), hearts(Rank::Three)]);
         let not_contained = Cards::from_vec(vec![spades(Rank::Ace)]);
         assert!(!all.contains_all(&not_contained));
     }
@@ -594,10 +582,7 @@ mod tests {
     #[test]
     fn test_contains_all_insufficient_count() {
         // 有两张♠3，但检查三张♠3
-        let all = Cards::from_vec(vec![
-            spades(Rank::Three),
-            hearts(Rank::Three),
-        ]);
+        let all = Cards::from_vec(vec![spades(Rank::Three), hearts(Rank::Three)]);
         let subset = Cards::from_vec(vec![
             spades(Rank::Three),
             spades(Rank::Three),
@@ -609,10 +594,7 @@ mod tests {
     #[test]
     fn test_contains_all_larger_than_self() {
         let small = Cards::from_vec(vec![spades(Rank::Three)]);
-        let large = Cards::from_vec(vec![
-            spades(Rank::Three),
-            hearts(Rank::Three),
-        ]);
+        let large = Cards::from_vec(vec![spades(Rank::Three), hearts(Rank::Three)]);
         assert!(!small.contains_all(&large));
     }
 
@@ -646,10 +628,7 @@ mod tests {
             spades(Rank::Five),
             clubs(Rank::King),
         ]);
-        let played = Cards::from_vec(vec![
-            spades(Rank::Three),
-            spades(Rank::Five),
-        ]);
+        let played = Cards::from_vec(vec![spades(Rank::Three), spades(Rank::Five)]);
 
         let remaining = hand.subtract(&played);
         assert!(remaining.is_some());
@@ -661,14 +640,8 @@ mod tests {
 
     #[test]
     fn test_subtract_all() {
-        let hand = Cards::from_vec(vec![
-            spades(Rank::Three),
-            hearts(Rank::Three),
-        ]);
-        let played = Cards::from_vec(vec![
-            spades(Rank::Three),
-            hearts(Rank::Three),
-        ]);
+        let hand = Cards::from_vec(vec![spades(Rank::Three), hearts(Rank::Three)]);
+        let played = Cards::from_vec(vec![spades(Rank::Three), hearts(Rank::Three)]);
 
         let remaining = hand.subtract(&played);
         assert!(remaining.is_some());
@@ -678,10 +651,7 @@ mod tests {
     #[test]
     fn test_subtract_not_enough() {
         let hand = Cards::from_vec(vec![spades(Rank::Three)]);
-        let played = Cards::from_vec(vec![
-            spades(Rank::Three),
-            hearts(Rank::Three),
-        ]);
+        let played = Cards::from_vec(vec![spades(Rank::Three), hearts(Rank::Three)]);
 
         let remaining = hand.subtract(&played);
         assert!(remaining.is_none());
@@ -792,10 +762,7 @@ mod tests {
 
     #[test]
     fn test_sorted() {
-        let cards = Cards::from_vec(vec![
-            clubs(Rank::King),
-            spades(Rank::Three),
-        ]);
+        let cards = Cards::from_vec(vec![clubs(Rank::King), spades(Rank::Three)]);
 
         let sorted = cards.sorted();
         assert_eq!(sorted[0].rank, Rank::Three);
@@ -806,20 +773,14 @@ mod tests {
 
     #[test]
     fn test_into_iter_owned() {
-        let cards = Cards::from_vec(vec![
-            spades(Rank::Three),
-            hearts(Rank::Three),
-        ]);
+        let cards = Cards::from_vec(vec![spades(Rank::Three), hearts(Rank::Three)]);
         let count = cards.into_iter().count();
         assert_eq!(count, 2);
     }
 
     #[test]
     fn test_into_iter_ref() {
-        let cards = Cards::from_vec(vec![
-            spades(Rank::Three),
-            hearts(Rank::Three),
-        ]);
+        let cards = Cards::from_vec(vec![spades(Rank::Three), hearts(Rank::Three)]);
         let count = cards.iter().count();
         assert_eq!(count, 2);
     }
@@ -851,20 +812,14 @@ mod tests {
 
     #[test]
     fn test_index_access() {
-        let cards = Cards::from_vec(vec![
-            spades(Rank::Three),
-            hearts(Rank::Three),
-        ]);
+        let cards = Cards::from_vec(vec![spades(Rank::Three), hearts(Rank::Three)]);
         assert_eq!(cards[0].rank, Rank::Three);
         assert_eq!(cards[1].rank, Rank::Three);
     }
 
     #[test]
     fn test_index_mut_access() {
-        let mut cards = Cards::from_vec(vec![
-            spades(Rank::Three),
-            hearts(Rank::Three),
-        ]);
+        let mut cards = Cards::from_vec(vec![spades(Rank::Three), hearts(Rank::Three)]);
         cards[0] = spades(Rank::Five);
         assert_eq!(cards[0].rank, Rank::Five);
     }
@@ -873,10 +828,9 @@ mod tests {
 
     #[test]
     fn test_from_iterator() {
-        let cards: Cards = vec![
-            spades(Rank::Three),
-            hearts(Rank::Three),
-        ].into_iter().collect();
+        let cards: Cards = vec![spades(Rank::Three), hearts(Rank::Three)]
+            .into_iter()
+            .collect();
 
         assert_eq!(cards.len(), 2);
     }
@@ -885,10 +839,7 @@ mod tests {
 
     #[test]
     fn test_display() {
-        let cards = Cards::from_vec(vec![
-            spades(Rank::Three),
-            hearts(Rank::Three),
-        ]);
+        let cards = Cards::from_vec(vec![spades(Rank::Three), hearts(Rank::Three)]);
         let s = format!("{}", cards);
         assert!(!s.is_empty());
     }
